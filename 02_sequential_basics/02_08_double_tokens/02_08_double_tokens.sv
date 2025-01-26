@@ -7,7 +7,7 @@ module double_tokens
     input        clk,
     input        rst,
     input        a,
-    output       b,
+    output logic b,
     output logic overflow
 );
     // Task:
@@ -27,32 +27,58 @@ module double_tokens
 
     logic [7:0] count;
 
+    typedef enum logic
+    {  
+        S0,
+        S1
+    } state_type;
+
+    state_type state;
+
     always_ff @(posedge clk) begin
         if (rst) begin
             count <= 'd0;
-            overflow <= 'd0;
+            state <= S0;
         end else begin
-            if (!overflow) begin
-                if (a) begin
-                    if (~|count) begin
-                        count <= count + 2;
-                    end else if (count == 200 - 1) begin
-                        count <= 'd0;
-                        overflow <= 'd1;
-                    end else begin
-                        count <= count + 1;
+            case (state)
+                S0:
+                    begin
+                        if (a) begin
+                            case (count)
+                                'd0:
+                                    begin
+                                        count <= count + 1;
+                                        state <= S0;
+                                    end
+                                'd200:
+                                    begin
+                                        state <= S1;
+                                    end
+                                default:
+                                    begin
+                                        count <= count + 1;
+                                        state <= S0;
+                                    end
+                            endcase
+                        end else begin
+                            if (|count) begin
+                                count <= count - 1;
+                                state <= S0;
+                            end else begin
+                                count <= 'd0;
+                                state <= S0;
+                            end 
+                        end
                     end
-                end else begin
-                    if (|count) begin
-                        count <= count - 1;
-                    end else begin
-                        count <= 'd0;
+                S1:
+                    begin
+                        state <= S1;
                     end
-                end
-            end
+            endcase
         end
     end
 
-    assign b = (~|count) ? 0 : 1;
+    assign b = (a || |count) ? 1 : 0;
+    assign overflow = (state) ? 1 : 0;
 
 endmodule

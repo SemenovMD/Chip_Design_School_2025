@@ -4,10 +4,10 @@
 
 module halve_tokens
 (
-    input  clk,
-    input  rst,
-    input  a,
-    output b
+    input  logic clk,
+    input  logic rst,
+    input  logic a,
+    output logic b
 );
     // Task:
     // Implement a serial module that reduces amount of incoming '1' tokens by half.
@@ -19,28 +19,44 @@ module halve_tokens
     // a -> 110_011_101_000_1111
     // b -> 010_001_001_000_0101
 
-    logic flag;
+    typedef enum logic
+    {  
+        S0,
+        S1
+    } state_type;
+
+    state_type state;
 
     always_ff @(posedge clk) begin
         if (rst) begin
-            flag <= 'd0;
+            state <= S0;
         end else begin
-            if (a) begin
-                if (!flag) begin
-                    flag <= 'd1;
-                end else begin
-                    flag <= 'd0;
-                end
-            end else begin
-                if (flag) begin
-                    flag <= 'd1;
-                end else begin
-                    flag <= 'd0;
-                end
-            end
+            case (state)
+                S0:
+                    begin
+                        if (!a) begin
+                            state <= S0;
+                        end else begin
+                            state <= S1;
+                        end
+                    end
+                S1:
+                    begin
+                        if (!a) begin
+                            state <= S1;
+                        end else begin
+                            state <= S0;
+                        end
+                    end
+            endcase
         end
     end
 
-    assign b = (a && flag) ? 1 : 0;
+    always_comb begin
+        case (state)
+            S0: b = 'd0;
+            S1: b = a & 'd1;
+        endcase
+    end
 
 endmodule

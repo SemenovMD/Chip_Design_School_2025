@@ -14,6 +14,8 @@ FAIL 02_06_serial_comparator_most_significant_first_using_fsm/testbench.sv
 ++ TEST     => {scm_less:z, scm_eq:z, scm_greater:z} != {seq_scm_less[i][j]:0, seq_scm_eq[i][j]:1, seq_scm_greater[i][j]:0}
 02_06_serial_comparator_most_significant_first_using_fsm/testbench.sv:140: $finish(1) called at 4500 (1s)
 PASS 02_07_halve_tokens/testbench.sv
+VCD info: dumpfile dump.vcd opened for output.
+VCD warning: $dumpvars: Package ($unit) is not dumpable with VCD.
 PASS 02_08_double_tokens/testbench.sv
 PASS 02_09_round_robin_arbiter_with_2_requests/testbench.sv
 PASS 02_10_serial_to_parallel/testbench.sv

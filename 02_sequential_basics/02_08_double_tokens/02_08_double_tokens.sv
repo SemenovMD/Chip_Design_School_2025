@@ -25,5 +25,34 @@ module double_tokens
     // a -> 10010011000110100001100100
     // b -> 11011011110111111001111110
 
+    logic [7:0] count;
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            count <= 'd0;
+            overflow <= 'd0;
+        end else begin
+            if (!overflow) begin
+                if (a) begin
+                    if (~|count) begin
+                        count <= count + 2;
+                    end else if (count == 200 - 1) begin
+                        count <= 'd0;
+                        overflow <= 'd1;
+                    end else begin
+                        count <= count + 1;
+                    end
+                end else begin
+                    if (|count) begin
+                        count <= count - 1;
+                    end else begin
+                        count <= 'd0;
+                    end
+                end
+            end
+        end
+    end
+
+    assign b = (~|count) ? 0 : 1;
 
 endmodule

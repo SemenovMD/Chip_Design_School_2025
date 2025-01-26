@@ -19,5 +19,28 @@ module halve_tokens
     // a -> 110_011_101_000_1111
     // b -> 010_001_001_000_0101
 
+    logic flag;
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            flag <= 'd0;
+        end else begin
+            if (a) begin
+                if (!flag) begin
+                    flag <= 'd1;
+                end else begin
+                    flag <= 'd0;
+                end
+            end else begin
+                if (flag) begin
+                    flag <= 'd1;
+                end else begin
+                    flag <= 'd0;
+                end
+            end
+        end
+    end
+
+    assign b = (a && flag) ? 1 : 0;
 
 endmodule
